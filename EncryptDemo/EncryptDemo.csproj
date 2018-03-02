@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{283D3E5F-BC45-4D5B-8646-8D5CBE2A156D}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>EncryptDemo</RootNamespace>
+    <AssemblyName>EncryptDemo</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>EncryptDemo.Program</StartupObject>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DevSrvLogic">
+      <HintPath>E:\MyRepository\BL_GpsWearableAj\DevSrvLogic\bin\Debug\DevSrvLogic.dll</HintPath>
+    </Reference>
+    <Reference Include="GpsWearable.Entity">
+      <HintPath>E:\MyRepository\BL_GpsWearableAj\GpsWearable.Entity\bin\Debug\GpsWearable.Entity.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\Newtonsoft.Json\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Wearable.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\MyRepository\yj_Wearable\Wearable.DAL\bin\Debug\Wearable.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Wearable.DAL">
+      <HintPath>E:\MyRepository\yj_Wearable\Wearable.DAL\bin\Debug\Wearable.DAL.dll</HintPath>
+    </Reference>
+    <Reference Include="Wearable.DBUtility, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\MyRepository\yj_Wearable\Wearable.DAL\bin\Debug\Wearable.DBUtility.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\ExtendHelper.cs" />
+    <Compile Include="Common\HttpUtil.cs" />
+    <Compile Include="Common\JsonHelper.cs" />
+    <Compile Include="Common\StringHelper.cs" />
+    <Compile Include="CRC\CRCCheckSumHelper.cs" />
+    <Compile Include="CRC\GT106CRC.cs" />
+    <Compile Include="DESEncrypt.cs" />
+    <Compile Include="HttpHelper.cs" />
+    <Compile Include="HttpRequestMode.cs" />
+    <Compile Include="Linq\GroupByTest.cs" />
+    <Compile Include="LocationDemo.cs" />
+    <Compile Include="LocationFilterTest.cs" />
+    <Compile Include="PositionJudgeHelper.cs" />
+    <Compile Include="PositionUtil.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResultReturn.cs" />
+    <Compile Include="Service References\AjMobileService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="TimerTest.cs" />
+    <Compile Include="VoiceSearchOpention.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="Service References\AjMobileService\AjMobileService.wsdl" />
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultListOfAjPhoneCountryCodeViewModel.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultListOfAjTrailViewModel.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultListOfAjWiFiModel.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultListOfDevice.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultListOfDeviceAttention.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultListOfGeofence.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultListOfHeartData.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultListOfJPushMessage.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultListOfLocation.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultListOfUserMessage.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultObjectOfAjDeviceSettingViewModel.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultObjectOfAjSOSViewModel.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultObjectOfAjUserInfoViewModel.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultObjectOfBoolean.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultObjectOfDevice.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultObjectOfDeviceAttention.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultObjectOfDeviceDTO.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultObjectOfDeviceUnBindViewModel.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultObjectOfGeofence.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultObjectOfHeartData.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultObjectOfInt32.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultObjectOfItem.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultObjectOfString.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultObjectOfUpdateItem.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="WebServiceTest\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\AjMobileService\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\AjMobileService\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\AjMobileService\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\AjMobileService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="doc\GooglePostParams.txt" />
+    <Content Include="doc\test.jpg" />
+    <Content Include="doc\微信图片.jpg" />
+    <None Include="Service References\AjMobileService\AjMobileService.disco" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\e3net.Common\e3net.Common.csproj">
+      <Project>{23aba422-dfc0-47a3-b2f2-669fb5921e1c}</Project>
+      <Name>e3net.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
