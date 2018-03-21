@@ -10,18 +10,46 @@ namespace RedisServer.Console
     {
         static void Main(string[] args)
         {
-            //string key = "send_bl_1";
-            //long cout = HashOperator.QueueCount(key);
-            List<string> list = new List<string>();
-            list.Add("宁浩");
-            list.Add("大家好");
-            sadd("list_1", list);
+
+            Task.Run(() =>
+            {
+                System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+                sw.Start();
+                //AsyncAddLists(100000);
+                Pop(100000);
+                sw.Stop();
+                TimeSpan ts2 = sw.Elapsed;
+                System.Console.WriteLine("总耗时:" + ts2.TotalMilliseconds);
+            });
             System.Console.ReadKey();
         }
 
-        public static void sadd(string key,List<string> list)
+        static void AsyncAddLists(int num)
         {
-            HashOperator.SAdd(key, list);
+            for (int i = 0; i < num; i++)
+            {
+                for (int k = 0; k < 10; k++)
+                {
+                    HashOperator.Set<string>(string.Format("key_{0}_{1}",i,k),"hello redis");
+                }
+            }           
         }
+
+        static void Push(int loops)
+        {
+            for (int i = 0; i < loops; i++)
+            {
+                HashOperator.PushString("list_pop", i.ToString());
+            }
+        }
+
+        static void Pop(int loops)
+        {
+            for (int i = 0; i < loops; i++)
+            {
+                HashOperator.PopString("list_pop");
+            }
+        }
+
     }
 }
