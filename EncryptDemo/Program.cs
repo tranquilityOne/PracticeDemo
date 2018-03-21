@@ -236,8 +236,8 @@ namespace EncryptDemo
             //var strs = "0123456789附近约xx";
             //Console.WriteLine(strs.Substring(0, strs.LastIndexOf("附近约") + 3));
 
-            Console.WriteLine(PostGetSyncData());
-
+            //Console.WriteLine(PostGetSyncData());
+            AddChatGroup();
             //for (int i = 0; i < 10; i++)
             //{
             //    Thread.Sleep(1000);
@@ -252,28 +252,8 @@ namespace EncryptDemo
             Console.WriteLine(string.Format("{0}执行完毕！",name));
         }
 
-        public static string ToHexString(byte[] byts)
-        {
-            String result = "";
-            try
-            {
-                foreach (var item in byts)
-                {
-                    result += item.ToString("X").PadLeft(2, '0');
-                }
-            }
-            catch (Exception ex)
-            {
-
-                throw;
-            }
-
-            return result;
-        }
-
         public static int ToBKDRHash(string key)
         {
-
             int hash = 0;
             var arr = key.ToCharArray();
             foreach (var item in arr)
@@ -333,29 +313,11 @@ namespace EncryptDemo
           
         }
 
+        #region 进制转换
 
         public static string StrConvert(string str)
         {
             return str.Replace("\"", "\\\"");
-        }
-
-        /// <summary>
-        /// 根据环境翻译地理位置描述
-        /// </summary>
-        /// <returns></returns>
-        public static string AdressConvert(string address, string language = "zh-cn")
-        {
-            if (!string.IsNullOrEmpty(address))
-            {
-                Regex r = new Regex("(?<=(附近约))[.\\s\\S]*?(?=(米))", RegexOptions.Multiline | RegexOptions.Singleline);
-                MatchCollection mc = r.Matches(address);
-                string radius = string.Empty;
-                if (mc.Count > 0)
-                    radius = mc[0].Value;
-                if (language.ToLower() != "zh-cn")
-                    address = address.Substring(0, address.IndexOf("附近约")) + " Within about " + radius + " meters";
-            }
-            return address;
         }
 
         /// <summary>
@@ -398,7 +360,7 @@ namespace EncryptDemo
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static  byte[] HexStringToByte(String value)
+        public static byte[] HexStringToByte(String value)
         {
 
             byte[] b = new byte[value.Length / 2];
@@ -415,16 +377,19 @@ namespace EncryptDemo
         /// </summary>
         /// <returns></returns>
         public static string GetFormatDate()
-        {     
-            string dateStr =DateTime.Now.ToString("yyMMddHHmmss");
+        {
+            string dateStr = DateTime.Now.ToString("yyMMddHHmmss");
             string hexDate = string.Empty;
             for (int i = 0; i < dateStr.Length; i = i + 2)
             {
-                int item = Convert.ToInt32(dateStr.Substring(i,2));
+                int item = Convert.ToInt32(dateStr.Substring(i, 2));
                 hexDate += Convert.ToInt32(item).ToHexPadLeft(2);
             }
             return hexDate;
-        }
+        } 
+        #endregion
+
+
 
         #region 模拟发送学生卡报警信息
         /// <summary>
@@ -488,14 +453,6 @@ namespace EncryptDemo
             NameValueCollection collection = new NameValueCollection();
             collection.Add("test1","123");
             HttpHelper.HttpPostData(url, 60000, fileKeyName, filePath, collection);
-        }
-
-        public static void GetTime()
-        {
-           Console.WriteLine(DateTime.Now.Second-DateTime.UtcNow.Second);
-           //ReadOnlyCollection<TimeZoneInfo> timeZones = TimeZoneInfo.GetSystemTimeZones();
-           //var zone=TimeZoneInfo.FindSystemTimeZoneById("China Standard Time");
-           //DateTime date=TimeZoneInfo.ConvertTime(DateTime.Now, zone);         
         }
 
         /// <summary>
@@ -833,7 +790,7 @@ namespace EncryptDemo
             bm.Save(System.Environment.CurrentDirectory + @"\doc\压缩图片.jpg", ImageFormat.Png);
         }
 
-        #region 模拟添加群聊数据
+        #region 模拟添加群聊数据(新数据结构)
 
         /// <summary>
         /// 模拟添加设备关联人员
@@ -856,11 +813,44 @@ namespace EncryptDemo
                     http.PostRequest(url, jsonData);
                 }               
             }
-        } 
+        }
+
+        /// <summary>
+        /// 添加群聊数据
+        /// </summary>
+        static void AddChatGroup()
+        {
+            e3net.Common.NetWork.HttpUtil http = new e3net.Common.NetWork.HttpUtil();
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+            for (int j = 0; j < 5; j++)
+            {
+                for (int k = 0; k < 10000; k++)
+                {
+                    string deviceId = "device_" + k;
+                    for (int i = 0; i < 3; i++)
+                    {
+                        PostChatGroupData postEntity = new PostChatGroupData();
+                        postEntity.deviceId = deviceId;
+                        postEntity.speakerId = string.Format("id_{0}_{1}", k, i);
+                        postEntity.timePeriod = 3;
+
+                        string jsonData = JsonHelper.ObjectToJSON(postEntity);
+                        string url = "http://localhost:29105/WeChat/AddChatGroup";
+                        http.PostRequest(url, jsonData);
+                    }
+                } 
+            }
+           
+            sw.Stop();
+            Console.WriteLine("总耗时："+sw.Elapsed.TotalMilliseconds);
+        }
+
         #endregion
     }
 
 
+    #region 聊天辅助类
     /// <summary>
     /// 群聊用户信息
     /// </summary>
@@ -877,6 +867,19 @@ namespace EncryptDemo
         /// </summary>
         public string nickName { get; set; }
     }
+
+    /// <summary>
+    /// 提交群聊请求数据
+    /// </summary>
+    public class PostChatGroupData
+    {
+        public string deviceId { get; set; }
+
+        public string speakerId { get; set; }
+
+        public int timePeriod { get; set; }
+    }
+    #endregion
 
     public class Student
     {
