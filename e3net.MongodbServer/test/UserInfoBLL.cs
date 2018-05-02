@@ -11,43 +11,57 @@ namespace e3net.MongodbServer.Test
     public class UserInfoBLL : MG_BaseDAL<UserInfo>, IMG_BaseDAL<UserInfo>
     {
 
-          //public JsonResult GetList()
-          //{
+        private static UserInfoBLL singleInstance;
 
-          //    int pageIndex = Request["page"] == null ? 1 : int.Parse(Request["page"]);
-          //    int pageSize = Request["rows"] == null ? 10 : int.Parse(Request["rows"]);
-          //    FilterDefinition<RMS_Buttons> filter = MongoSetTool.GetSql<RMS_Buttons>(Request["sqlSet"]);
-          //    ////字段排序
-          //    String sortField = Request["sort"];
-          //    String sortOrder = Request["order"];
+        public static UserInfoBLL Instance
+        {
+            get
+            {
+                if (singleInstance == null)
+                    singleInstance = new UserInfoBLL();
+                return singleInstance;
+            }
+        }
+        private UserInfoBLL() { }
 
-          //    PageClass pc = new PageClass();
-          //    pc.sys_PageIndex = pageIndex;
-          //    pc.sys_PageSize = pageSize;
 
-          //    if (sortField != null)
-          //    {
-          //        pc.sys_Order = sortField;
-          //    }
-          //    else
-          //    {
-          //        pc.sys_Order = "Id";
-          //    }
+        //public JsonResult GetList()
+        //{
 
-          //    if (sortOrder != null && sortOrder.Equals("asc"))
-          //    {
-          //        pc.isDescending = true;
-          //    }
-          //    else
-          //    {
-          //        pc.isDescending = true;
-          //    }
-          //    IList<RMS_Buttons> list2 = OPBiz.FindWithPagerM(filter, pc);
-          //    Dictionary<string, object> dic = new Dictionary<string, object>();
-          //    dic.Add("rows", list2);
-          //    dic.Add("total", pc.RCount);
-          //    return Json(dic, JsonRequestBehavior.AllowGet);
-          //}
+        //    int pageIndex = Request["page"] == null ? 1 : int.Parse(Request["page"]);
+        //    int pageSize = Request["rows"] == null ? 10 : int.Parse(Request["rows"]);
+        //    FilterDefinition<RMS_Buttons> filter = MongoSetTool.GetSql<RMS_Buttons>(Request["sqlSet"]);
+        //    ////字段排序
+        //    String sortField = Request["sort"];
+        //    String sortOrder = Request["order"];
+
+        //    PageClass pc = new PageClass();
+        //    pc.sys_PageIndex = pageIndex;
+        //    pc.sys_PageSize = pageSize;
+
+        //    if (sortField != null)
+        //    {
+        //        pc.sys_Order = sortField;
+        //    }
+        //    else
+        //    {
+        //        pc.sys_Order = "Id";
+        //    }
+
+        //    if (sortOrder != null && sortOrder.Equals("asc"))
+        //    {
+        //        pc.isDescending = true;
+        //    }
+        //    else
+        //    {
+        //        pc.isDescending = true;
+        //    }
+        //    IList<RMS_Buttons> list2 = OPBiz.FindWithPagerM(filter, pc);
+        //    Dictionary<string, object> dic = new Dictionary<string, object>();
+        //    dic.Add("rows", list2);
+        //    dic.Add("total", pc.RCount);
+        //    return Json(dic, JsonRequestBehavior.AllowGet);
+        //}
 
 
         //public JsonResult EditInfo(RMS_Menus Mode)

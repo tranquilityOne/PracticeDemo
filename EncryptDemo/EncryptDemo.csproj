@@ -35,12 +35,6 @@
     <StartupObject>EncryptDemo.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DevSrvLogic">
-      <HintPath>E:\MyRepository\BL_GpsWearableAj\DevSrvLogic\bin\Debug\DevSrvLogic.dll</HintPath>
-    </Reference>
-    <Reference Include="GpsWearable.Entity">
-      <HintPath>E:\MyRepository\BL_GpsWearableAj\GpsWearable.Entity\bin\Debug\GpsWearable.Entity.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
@@ -86,17 +80,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Wearable.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>E:\MyRepository\yj_Wearable\Wearable.DAL\bin\Debug\Wearable.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Wearable.DAL">
-      <HintPath>E:\MyRepository\yj_Wearable\Wearable.DAL\bin\Debug\Wearable.DAL.dll</HintPath>
-    </Reference>
-    <Reference Include="Wearable.DBUtility, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>E:\MyRepository\yj_Wearable\Wearable.DAL\bin\Debug\Wearable.DBUtility.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\ExtendHelper.cs" />
@@ -205,6 +188,7 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="MongoTest\" />
     <Folder Include="WebServiceTest\" />
   </ItemGroup>
   <ItemGroup>
@@ -232,6 +216,10 @@
     <ProjectReference Include="..\e3net.Common\e3net.Common.csproj">
       <Project>{23aba422-dfc0-47a3-b2f2-669fb5921e1c}</Project>
       <Name>e3net.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\e3net.MongodbServer\e3net.MongodbServer.csproj">
+      <Project>{08054a37-906b-46db-b049-4c89dc9130f6}</Project>
+      <Name>e3net.MongodbServer</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

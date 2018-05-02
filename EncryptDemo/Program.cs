@@ -19,6 +19,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Threading;
 using e3net.Common;
+using e3net.MongodbServer.Test;
 
 namespace EncryptDemo
 {
@@ -46,7 +47,7 @@ namespace EncryptDemo
             //Console.WriteLine(bytes[0].ToHexPadLeft(2) + bytes[1].ToHexPadLeft(2) + bytes[2].ToHexPadLeft(2));
             //Console.WriteLine(num.ToHexPadLeft(6));
 
-         
+
             //GetTime();
             //string text = "你的话费余额 66666 元！";
             //string dataUsage = "你的流量 100M";
@@ -87,21 +88,21 @@ namespace EncryptDemo
             ////byte相加
             //Console.WriteLine((bytes[0] << 8) | bytes[1]);
             //string hexString = maxHexString.HexToString();
-         
+
             //byte[] bytes = Encoding.Unicode.GetBytes("2A53533B3C23");
             //Console.WriteLine(Encoding.Unicode.GetString(bytes));
-         
+
             //模拟webService调试
-           // AjMobileService.AjMobileServiceSoapClient service = new AjMobileService.AjMobileServiceSoapClient();
-           // AjMobileService.AppSearchOpention option = new AjMobileService.AppSearchOpention()
-           // {
-           //     PageSize = 10,
-           //     MsgIndex = 0,
-           //     LoginName = "86=18672583254",
-           //     DeviceId = ""
-           // };
-            
-           //var list = service.GetPushMessageList(option);
+            // AjMobileService.AjMobileServiceSoapClient service = new AjMobileService.AjMobileServiceSoapClient();
+            // AjMobileService.AppSearchOpention option = new AjMobileService.AppSearchOpention()
+            // {
+            //     PageSize = 10,
+            //     MsgIndex = 0,
+            //     LoginName = "86=18672583254",
+            //     DeviceId = ""
+            // };
+
+            //var list = service.GetPushMessageList(option);
 
             //生成位置信息表名
             //string locationName = "tb_Location_" + Math.Abs(ToBKDRHash(("86203503205299")) % 10) + "_20170926";
@@ -126,7 +127,7 @@ namespace EncryptDemo
             //Console.WriteLine(PositionJudgeHelper.IsInsideChina(22.4364176008, 114.1149902344));
             //Console.WriteLine(PositionJudgeHelper.IsInsideChina(19.5875641243,109.8151892424));
             //Console.WriteLine(PositionJudgeHelper.IsInsideChina(11.0059044597, 106.6937255859));
-           
+
             //YJ密码解密
             //var pwd = Wearable.Common.DESEncrypt.Decrypt("2E06F712A29B8095856164863990EEAB", "4N0LF8");
             //Console.WriteLine(pwd);
@@ -148,7 +149,7 @@ namespace EncryptDemo
 
             //模拟上传文件
             //PostFile();
-            
+
             //模拟读取txt文档数据
             //ReadFromText();
 
@@ -179,7 +180,7 @@ namespace EncryptDemo
             //Console.WriteLine(DateTime.Now.ToString("yyyy-MM-dd 11:10:00"));
 
             //PostAlarmForFrid();
-         
+
             //byte[] bytes = Encoding.ASCII.GetBytes("http://119.23.136.169:8080/600000000000008/alarm/20171031/alarm_15014131606.jpg"); 
             //Console.WriteLine(Encoding.ASCII.GetString(bytes));
             //Console.WriteLine(Convert.ToBase64String(bytes));
@@ -237,20 +238,76 @@ namespace EncryptDemo
             //Console.WriteLine(strs.Substring(0, strs.LastIndexOf("附近约") + 3));
 
             //Console.WriteLine(PostGetSyncData());
-            AddChatGroup();
+            //AddChatGroup();
             //for (int i = 0; i < 10; i++)
             //{
             //    Thread.Sleep(1000);
             //    Console.WriteLine(PostUploadPhoto());
             //}
-          
+
+            Console.WriteLine(DateTime.Now.Year);
+            Console.WriteLine((DateTime.Now).AddMonths(1).ToString("yyyy-MM-01"));
+
+
+            //MongodbInsert();
+            //DeliveryConsole();
             Console.ReadKey();
         }
 
-        public static void TickCompletedHandle(string name)
+
+        /// <summary>
+        /// 取得某月的第一天
+        /// </summary>
+        /// <param name="datetime">要取得月份第一天的时间</param>
+        /// <returns></returns>
+        private static DateTime FirstDayOfMonth(DateTime datetime)
         {
-            Console.WriteLine(string.Format("{0}执行完毕！",name));
+            return datetime.AddDays(1 - datetime.Day);
         }
+
+        /// <summary>
+        /// 数据插入
+        /// </summary>
+        static void MongodbInsert()
+        {
+            try
+            {
+                System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+                sw.Start();
+                List<UserInfo> lists = new List<UserInfo>();
+                for (int i = 1000000; i < 2000000; i++)
+                {
+                    lists.Add(new UserInfo()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Age = i,
+                        UserName = "Name_" + i
+                    });
+                }
+                UserInfoBLL.Instance.InsertBatch(lists);               
+                sw.Stop();
+                TimeSpan ts2 = sw.Elapsed;
+                System.Console.WriteLine("总耗时:" + ts2.TotalMilliseconds);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.StackTrace);
+            }
+           
+        }
+
+        #region 取模运算
+        /// <summary>
+        /// 取模运算
+        /// </summary>
+        static void DeliveryConsole()
+        {
+            for (int i = 1000; i < 9999; i++)
+            {
+                Console.WriteLine(i % 1000);
+            }
+        }
+
 
         public static int ToBKDRHash(string key)
         {
@@ -260,8 +317,15 @@ namespace EncryptDemo
             {
                 hash = hash * 131 + item;
             }
-            return hash%10;
+            return hash % 10;
+        } 
+        #endregion
+
+        public static void TickCompletedHandle(string name)
+        {
+            Console.WriteLine(string.Format("{0}执行完毕！",name));
         }
+
 
         /// <summary>
         /// 谷歌地址解析
@@ -389,8 +453,6 @@ namespace EncryptDemo
         } 
         #endregion
 
-
-
         #region 模拟发送学生卡报警信息
         /// <summary>
         /// 模拟发送学生卡报警信息
@@ -439,9 +501,10 @@ namespace EncryptDemo
             string paramsUrl = "DeviceId=" + DeviceId + "&Type=" + strType + "&DateTime=" + DateTime + "&Data=" + Data + "";
             string url = "http://localhost:8002/tools/alarm_message_new.aspx?" + paramsUrl;
             HttpHelper.HttpGet(url);
-        } 
+        }
         #endregion
 
+        #region 模拟上传文件
         /// <summary>
         /// 模拟上传文件
         /// </summary>
@@ -451,24 +514,26 @@ namespace EncryptDemo
             var url = "http://localhost:8090/User/EditUserPhoto";
             string fileKeyName = "test";
             NameValueCollection collection = new NameValueCollection();
-            collection.Add("test1","123");
+            collection.Add("test1", "123");
             HttpHelper.HttpPostData(url, 60000, fileKeyName, filePath, collection);
         }
+        #endregion
 
+        #region 逐个从txt文档 读出数据
         /// <summary>
         /// 逐个从txt文档 读出数据
         /// </summary>
         public static void ReadFromText()
         {
             string baseRoot = AppDomain.CurrentDomain.BaseDirectory.ToString() + @"\11.txt";
-            StreamReader sr = new StreamReader(baseRoot, Encoding.UTF8); 
+            StreamReader sr = new StreamReader(baseRoot, Encoding.UTF8);
             string strLine = null;
             while ((strLine = sr.ReadLine()) != null)
             {
                 Console.WriteLine(strLine);
-            }  
-        }
-
+            }
+        } 
+        #endregion
 
         #region 模拟请求webservices
         /// <summary>
@@ -706,10 +771,11 @@ namespace EncryptDemo
                 result = ex.Message;
             }
             return result;
-        } 
+        }
 
         #endregion
 
+        #region 微聊测试
         public static string TestWeChat()
         {
             string result = "success";
@@ -743,7 +809,7 @@ namespace EncryptDemo
                 {
                     Key = "duration",
                     Value = "5"
-                });             
+                });
                 lists.Add(new FormItemModel()
                 {
                     Key = "from_content",
@@ -751,7 +817,7 @@ namespace EncryptDemo
                     FileName = "chat_1.amr",
                     FileContent = File.OpenRead(appFile)
                 });
-                string url1 = "http://localhost:9001/WeChat/UploadChatSingle";                
+                string url1 = "http://localhost:9001/WeChat/UploadChatSingle";
                 result = e3net.Common.NetWork.HttpUtil.PostForm(url1, lists);
             }
             catch (Exception ex)
@@ -759,7 +825,8 @@ namespace EncryptDemo
                 result = ex.Message;
             }
             return result;
-        }
+        } 
+        #endregion
 
         public static void SaveImage()
         {

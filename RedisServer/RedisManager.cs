@@ -15,7 +15,7 @@ namespace RedisServer
         /// <summary>
         /// redis配置文件信息
         /// </summary>
-        private static string RedisPath = "Gpswareable@127.0.0.1:2017";
+        private static string RedisPath = "redis123456@127.0.0.1:6379";
          //[ThreadStatic]
         private static PooledRedisClientManager _prcm;
 
