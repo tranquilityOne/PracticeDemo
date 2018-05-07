@@ -248,6 +248,18 @@ namespace EncryptDemo
             Console.WriteLine(DateTime.Now.Year);
             Console.WriteLine((DateTime.Now).AddMonths(1).ToString("yyyy-MM-01"));
 
+            int aNum=0, bNum=0, cNum=0;
+            for (int i = 0; i < 100; i++)
+            {
+                if (i % 3 == 0)
+                    aNum++;
+                else if (i % 3 == 1)
+                    bNum++;
+                else if (i % 3 == 2)
+                    cNum++;
+                Console.WriteLine($"aNum:{aNum},bNum:{bNum},cNum:{cNum}");
+            }
+
 
             //MongodbInsert();
             //DeliveryConsole();
