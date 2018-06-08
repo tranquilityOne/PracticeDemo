@@ -1,0 +1,1 @@
+﻿protoc.exe -I=E:\private\code_test\PracticeDemo\GRPC.Protobuf  --csharp_out E:\private\code_test\PracticeDemo\GRPC.Protobuf E:\private\code_test\PracticeDemo\GRPC.Protobuf\Hello.proto

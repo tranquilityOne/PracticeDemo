@@ -1,0 +1,184 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+	<meta charset="utf-8" />
+    <script type="text/javascript" src="scripts/jquery.min.js"></script>
+    <script type="text/javascript" src="scripts/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript">
+        /**
+        * 如果想将日期字符串格式化,需先将其转换为日期类型Date
+        * 以下是提供几种常用的
+        *
+        * var da = new Date().format('yyyy-MM-dd hh:mm:ss'); //将日期格式串,转换成先要的格式
+        * alert("格式化日期类型 \n" + new Date() + "\n 为字符串：" + da);
+        *
+        * var str = "2014/01/01 01:01:01" // yyyy/mm/dd这种格式转化成日期对像可以用new Date(str);在转换成指定格式
+        * alert("格式化字符串\n" + str + " 为日期格式 \n" + new Date(str).format('yyyy-MM-dd hh:mm:ss'))
+        *
+        *
+        * var str1 = "2014-12-31 00:55:55" // yyyy-mm-dd这种格式的字符串转化成日期对象可以用new Date(Date.parse(str.replace(/-/g,"/")));
+        * alert("格式化字符串\n" + str1 + " 为日期格式 \n" + new Date(Date.parse(str1.replace(/-/g, "/"))).format('yyyy-MM-dd hh:mm:ss'))
+        */
+
+        Date.prototype.format = function (format) {
+            var date = {
+                "M+": this.getMonth() + 1,
+                "d+": this.getDate(),
+                "h+": this.getHours(),
+                "m+": this.getMinutes(),
+                "s+": this.getSeconds(),
+                "q+": Math.floor((this.getMonth() + 3) / 3),
+                "S+": this.getMilliseconds()
+            };
+            if (/(y+)/i.test(format)) {
+                format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+            }
+            for (var k in date) {
+                if (new RegExp("(" + k + ")").test(format)) {
+                    format = format.replace(RegExp.$1, RegExp.$1.length == 1
+                                    ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+                }
+            }
+            return format;
+        }
+        /*某年某月有多少天数*/
+        Date.daysInMonth = function (year, month) {
+            if (month == 1) {
+                if (year % 4 == 0 && year % 100 != 0)
+                    return 29;
+                else
+                    return 28;
+            } else if ((month <= 6 && month % 2 == 0) || (month = 6 && month % 2 == 1))
+                return 31;
+            else
+                return 30;
+        };
+        /* 日期加月
+        * 先将字符转换成Date类型才可以使用
+        * var str1 = "2014-12-31 00:55:55" // yyyy-mm-dd这种格式的字符串转化成日期对象可以用new Date(Date.parse(str.replace(/-/g,"/")));
+        * 例如 var saveDate = new Date(Date.parse(str1.replace(/-/g, "/"))).addMonth(5)
+        * addMonth(月数) 必须为整数
+        */
+        Date.prototype.addMonth = function (addMonth) {
+            var y = this.getFullYear();
+            var m = this.getMonth();
+            var nextY = y;
+            var nextM = m;
+            //如果当前月+要加上的月>11 这里之所以用11是因为 js的月份从0开始
+            if (m > 11) {
+                nextY = y + 1;
+                nextM = parseInt(m + addMonth) - 11;
+            } else {
+                nextM = this.getMonth() + addMonth
+            }
+            var daysInNextMonth = Date.daysInMonth(nextY, nextM);
+            var day = this.getDate();
+            if (day > daysInNextMonth) {
+                day = daysInNextMonth;
+            }
+            return new Date(nextY, nextM, day);
+        };
+
+        /*获取当月第一天*/
+        function getCurrentMonthFirst() {
+            var date = new Date();
+            date.setDate(1);
+            return date;
+        }
+
+        /*获取当月最后一天*/
+        function getCurrentMonthLast(dateStr) {
+            var date = new Date(dateStr);
+            var currentMonth = date.getMonth();
+            var nextMonth = ++currentMonth;
+            var nextMonthFirstDay = new Date(date.getFullYear(), nextMonth, 1);
+            var oneDay = 1000 * 60 * 60 * 24;
+            return new Date(nextMonthFirstDay - oneDay);
+        }
+
+        $(function () {
+            // 设置结束时间的最大可取值为today                
+            /*$('#date2').bind("click", function () {
+                var startDate = $('#date1').val();               
+                var currentMonthLastDate, thisMaxDate;
+                if (startDate != "" && startDate != null) {
+                    currentMonthLastDate = getCurrentMonthLast(startDate);
+
+                    //currentMonthLastDate>today
+                    if (currentMonthLastDate.getTime() > new Date().getTime()) {
+                        thisMaxDate = new Date().format("yyyy-MM-dd");
+                        //'#F{\'%y-%M-%d\'}';
+                    }
+                    else
+                        //thisMaxDate = '#F{$dp.$D(\'date1\',{d:7})}';
+                        thisMaxDate = currentMonthLastDate.format("yyyy-MM-dd");
+                }
+                else
+                    thisMaxDate = new Date().format("yyyy-MM-dd");
+
+                WdatePicker({
+                    el: "date2",
+                    readOnly: true,
+                    dateFmt: 'yyyy-MM-dd',
+                    minDate: startDate,
+                    maxDate: thisMaxDate
+              });
+              alert("minDate:" + startDate+",maxDate:" + thisMaxDate);
+            });*/
+        })
+       
+
+        function Set() {
+            var startDate = $('#date1').val();
+            var currentMonthLastDate, thisMaxDate;
+            if (startDate != "" && startDate != null) {
+                currentMonthLastDate = getCurrentMonthLast(startDate);
+
+                //currentMonthLastDate>today
+                if (currentMonthLastDate.getTime() > new Date().getTime()) {
+                    thisMaxDate = new Date().format("yyyy-MM-dd");
+                    //'#F{\'%y-%M-%d\'}';
+                }
+                else
+                    //thisMaxDate = '#F{$dp.$D(\'date1\',{d:7})}';
+                    thisMaxDate = currentMonthLastDate.format("yyyy-MM-dd");
+            }
+            else
+                thisMaxDate = new Date().format("yyyy-MM-dd");
+
+            console.log("startDate:" + startDate + ",thisMaxDate:" + thisMaxDate);
+            WdatePicker({
+                el:"date2",
+                readOnly: true,
+                dateFmt: 'yyyy-MM-dd',
+                minDate: startDate,
+                maxDate: thisMaxDate,
+               
+            });           
+        }
+
+        function SetBegin() {
+            console.log("SetBegin();");
+            WdatePicker({
+                readOnly: true,
+                dateFmt: 'yyyy-MM-dd',
+                minDate: '%y-{%M-6}-$d',
+                maxDate: '%y-%M-%d',
+                onpicked: function () {
+                    $("#date2").click();
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+     <input class="Wdate"  type="text" id="date1" name="date1" onclick="SetBegin();" />
+     至<input type="text" id="date2" name="date2" onclick="Set();" />
+
+    <input type="text" id="date3" onclick="WdatePicker({ readOnly: true, dateFmt: 'yyyy-MM-dd', minDate: '2018-03-01', maxDate: '2018-03-31' })" />
+    <input type="text" id="test1" name="test1" value="" />
+    <input type="button" onclick="Set();" value="设置" />
+</body>
+</html>

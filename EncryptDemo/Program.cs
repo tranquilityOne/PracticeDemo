@@ -245,21 +245,36 @@ namespace EncryptDemo
             //    Console.WriteLine(PostUploadPhoto());
             //}
 
-            Console.WriteLine(DateTime.Now.Year);
-            Console.WriteLine((DateTime.Now).AddMonths(1).ToString("yyyy-MM-01"));
+            Console.WriteLine(9 / 100);
 
-            int aNum=0, bNum=0, cNum=0;
-            for (int i = 0; i < 100; i++)
-            {
-                if (i % 3 == 0)
-                    aNum++;
-                else if (i % 3 == 1)
-                    bNum++;
-                else if (i % 3 == 2)
-                    cNum++;
-                Console.WriteLine($"aNum:{aNum},bNum:{bNum},cNum:{cNum}");
-            }
+            #region 计时器测试(连续开始与暂停后,统计耗时)
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            sw.Restart();
+            Thread.Sleep(2000);
+            sw.Stop();
+            Console.WriteLine($"耗时:{sw.ElapsedMilliseconds} ");
+            sw.Restart();
+            Thread.Sleep(2000);
+            Console.WriteLine($"耗时:{sw.ElapsedMilliseconds} ");
+            sw.Stop();
+            #endregion
 
+
+
+
+            #region 取模测试
+            //int aNum = 0, bNum = 0, cNum = 0;
+            //for (int i = 0; i < 100; i++)
+            //{
+            //    if (i % 3 == 0)
+            //        aNum++;
+            //    else if (i % 3 == 1)
+            //        bNum++;
+            //    else if (i % 3 == 2)
+            //        cNum++;
+            //    Console.WriteLine($"aNum:{aNum},bNum:{bNum},cNum:{cNum}");
+            //}
+            #endregion
 
             //MongodbInsert();
             //DeliveryConsole();
