@@ -13,5 +13,7 @@ namespace RMQ.Model
         public string Msg { get; set; }
 
         public DateTime CreateDateTime { get; set; }
+
+        public int flag { get; set; }
     }
 }

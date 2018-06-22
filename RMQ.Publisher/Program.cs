@@ -23,35 +23,34 @@ namespace RMQ.Publisher
                 Password = "guest"
             });
 
-            var input = Input();
+            //rabbitMqProxy.PublishBraodcastDefault();
 
+            #region 封装逻辑
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-            sw.Start();
-            var log = new MessageModel
+            try
             {
-                CreateDateTime = DateTime.Now,
-                Msg = input
-            };
-            for (int i = 0; i < 500000; i++)
-            {
-                rabbitMqProxy.Publish(log);
+                sw.Start();
+                Console.WriteLine("*****************消息发布开始******************");
+                for (int i = 0; i < 10000; i++)
+                {
+                    var log = new MessageModel
+                    {
+                        CreateDateTime = DateTime.Now,
+                        Msg = $"hello world {i}",
+                        flag = i
+                    };
+                    rabbitMqProxy.PublishBroadCast(log);
+                    System.Threading.Thread.Sleep(200);
+                }
+                sw.Stop();
             }
-            sw.Stop();
-            Console.WriteLine("总耗时:"+sw.Elapsed.Milliseconds);
-
-            #region 单个数据
-            //while (input != "exit")
-            //{
-            //    var log = new MessageModel
-            //    {
-            //        CreateDateTime = DateTime.Now,
-            //        Msg = input
-            //    };
-            //    rabbitMqProxy.Publish(log);
-            //    input = Input();
-            //} 
-            #endregion
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            Console.WriteLine("总耗时:" + sw.Elapsed.Milliseconds);
             rabbitMqProxy.Dispose();
+            #endregion
         }
 
         private static string Input()

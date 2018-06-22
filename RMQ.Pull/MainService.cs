@@ -1,12 +1,12 @@
-﻿using RMQ.Main;
-using RMQ.Main.ProxyConfig;
-using RMQ.Model;
+﻿using RMQ.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FrameWork.Extension;
+using RMQ.Main;
+using RMQ.Main.ProxyConfig;
 
 namespace RMQ.Pull
 {

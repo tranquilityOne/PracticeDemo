@@ -28,10 +28,11 @@ namespace RMQ.Subscriber
 
         public bool Start()
         {
-            _rabbitMqProxy.Subscribe<MessageModel>(msg =>
+            //_rabbitMqProxy.SubscribeBroadcastDefault();
+
+            _rabbitMqProxy.SubscribeBroadCast<MessageModel>(msg =>
             {
-                //var json = msg.ToJson();
-                //Console.WriteLine(json);
+                Console.WriteLine(msg.flag);
             });
 
             return true;

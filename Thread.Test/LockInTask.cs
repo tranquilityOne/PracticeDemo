@@ -52,7 +52,7 @@ namespace ThreadTest
             {
                 try
                 {
-                    //经测试不使用Interlocked.Increment,同样可实现原子操作,why?
+                    //经测试，不使用Interlocked.Increment,同样可实现原子操作,why?
 
                     //not use lock
                     //result++;

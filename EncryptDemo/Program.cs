@@ -20,6 +20,7 @@ using System.Drawing.Imaging;
 using System.Threading;
 using e3net.Common;
 using e3net.MongodbServer.Test;
+using e3net.MongodbServer;
 
 namespace EncryptDemo
 {
@@ -245,22 +246,17 @@ namespace EncryptDemo
             //    Console.WriteLine(PostUploadPhoto());
             //}
 
-            Console.WriteLine(9 / 100);
-
             #region 计时器测试(连续开始与暂停后,统计耗时)
-            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-            sw.Restart();
-            Thread.Sleep(2000);
-            sw.Stop();
-            Console.WriteLine($"耗时:{sw.ElapsedMilliseconds} ");
-            sw.Restart();
-            Thread.Sleep(2000);
-            Console.WriteLine($"耗时:{sw.ElapsedMilliseconds} ");
-            sw.Stop();
+            //System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            //sw.Restart();
+            //Thread.Sleep(2000);
+            //sw.Stop();
+            //Console.WriteLine($"耗时:{sw.ElapsedMilliseconds} ");
+            //sw.Restart();
+            //Thread.Sleep(2000);
+            //Console.WriteLine($"耗时:{sw.ElapsedMilliseconds} ");
+            //sw.Stop();
             #endregion
-
-
-
 
             #region 取模测试
             //int aNum = 0, bNum = 0, cNum = 0;
@@ -276,7 +272,7 @@ namespace EncryptDemo
             //}
             #endregion
 
-            //MongodbInsert();
+            MongodbInsert();
             //DeliveryConsole();
             Console.ReadKey();
         }
@@ -292,6 +288,7 @@ namespace EncryptDemo
             return datetime.AddDays(1 - datetime.Day);
         }
 
+        #region mongo数据批量插入
         /// <summary>
         /// 数据插入
         /// </summary>
@@ -299,19 +296,32 @@ namespace EncryptDemo
         {
             try
             {
-                System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
-                sw.Start();
-                List<UserInfo> lists = new List<UserInfo>();
-                for (int i = 1000000; i < 2000000; i++)
+                System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();              
+                List<TerLastInfo> lists = new List<TerLastInfo>();
+                for (int i = 0; i < 1000000; i++)
                 {
-                    lists.Add(new UserInfo()
+                    lists.Add(new TerLastInfo()
                     {
                         Id = Guid.NewGuid().ToString(),
-                        Age = i,
-                        UserName = "Name_" + i
-                    });
+                        AccStatus = 0,
+                        RunStatus = 1,
+                        BLatitude = 22.36363,
+                        BLongitude = 110.56989,
+                        IMEI = "860000000"+i.ToString().PadLeft(6,'0'),
+                        Latitude = 22.36363,
+                        LocateTime=DateTime.Now,
+                        LocateType=1,
+                        Longitude= 110.56989,
+                        Mileage=10,
+                        MLatitude=9,
+                        MLongitude=8,
+                        TerID = i,
+                    });   
                 }
-                UserInfoBLL.Instance.InsertBatch(lists);               
+
+                sw.Start();
+                MG_BaseDAL<TerLastInfo> dal = new MG_BaseDAL<TerLastInfo>();
+                dal.InsertBatch(lists);
                 sw.Stop();
                 TimeSpan ts2 = sw.Elapsed;
                 System.Console.WriteLine("总耗时:" + ts2.TotalMilliseconds);
@@ -320,8 +330,9 @@ namespace EncryptDemo
             {
                 Console.WriteLine(ex.StackTrace);
             }
-           
-        }
+
+        } 
+        #endregion
 
         #region 取模运算
         /// <summary>

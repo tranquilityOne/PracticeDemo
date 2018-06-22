@@ -139,12 +139,12 @@ namespace RMQ.Main
         {
             return ModelDic.GetOrAdd(queue, key =>
             {
-                var model = _conn.CreateModel();
-                ExchangeDeclare(model, exchange, ExchangeType.Direct, isProperties);
-                QueueDeclare(model, queue, isProperties);
-                model.QueueBind(queue, exchange, routingKey);
-                ModelDic[queue] = model;
-                return model;
+                var channel = _conn.CreateModel();
+                ExchangeDeclare(channel, exchange, ExchangeType.Fanout, isProperties);
+                //QueueDeclare(model, queue, isProperties);
+                //model.QueueBind(queue, exchange, routingKey);
+                ModelDic[queue] = channel;
+                return channel;
             });
         }
 
@@ -157,18 +157,34 @@ namespace RMQ.Main
         private static IModel GetModel(string queue, bool isProperties = false)
         {
             return ModelDic.GetOrAdd(queue, value =>
-            {
-                var model = _conn.CreateModel();
-                QueueDeclare(model, queue, isProperties);
-
+            {            
+                var channel = _conn.CreateModel();
+                QueueDeclare(channel, queue, isProperties);
                 //每次消费的消息数
-                model.BasicQos(0, 1, false);
+                channel.BasicQos(0, 1, false);
 
-                ModelDic[queue] = model;
+                ModelDic[queue] = channel;
 
-                return model;
+                return channel;
             });
         }
+
+        /// <summary>
+        /// 获取Model
+        /// </summary>
+        /// <param name="queue">队列名称</param>
+        /// <returns></returns>
+        private static IModel GetBroadCastChannel(string queue,string exchange)
+        {
+            return ModelDic.GetOrAdd(queue, value =>
+            {
+                var channel = _conn.CreateModel();
+                channel.ExchangeDeclare(exchange: exchange, type: "fanout");
+                ModelDic[queue] = channel;
+                return channel;
+            });
+        }
+
         #endregion
 
         #region 发布消息
@@ -188,10 +204,31 @@ namespace RMQ.Main
             var body = command.ToJson();
             var exchange = queueInfo.ExchangeName;
             var queue = queueInfo.QueueName;
-            var routingKey = queueInfo.ExchangeName;
+            var routingKey = "";
             var isProperties = queueInfo.IsPersistence;
 
             Publish(exchange, queue, routingKey, body, isProperties);
+        }
+
+        /// <summary>
+        /// 发布消息(广播形式)
+        /// </summary>
+        /// <param name="command">指令</param>
+        /// <returns></returns>
+        public void PublishBroadCast<T>(T command) where T : class
+        {
+            var queueInfo = GetRabbitMqAttribute<T>();
+
+            if (queueInfo == null)
+                throw new ArgumentException(RabbitMqAttribute);
+
+            var body = command.ToJson();
+            var exchange = queueInfo.ExchangeName;
+            var queue = queueInfo.QueueName;
+            var routingKey = "";
+            var isProperties = queueInfo.IsPersistence;
+
+            PublishBroadCast(exchange, queue, routingKey, body, isProperties);
         }
 
         /// <summary>
@@ -207,6 +244,28 @@ namespace RMQ.Main
         {
             var channel = GetModel(exchange, queue, routingKey, isProperties);
 
+            try
+            {
+                channel.BasicPublish(exchange, routingKey, null, body.SerializeUtf8());
+            }
+            catch (Exception ex)
+            {
+                throw ex.GetInnestException();
+            }
+        }
+
+        /// <summary>
+        /// 发布消息
+        /// </summary>
+        /// <param name="routingKey">路由键</param>
+        /// <param name="body">队列信息</param>
+        /// <param name="exchange">交换机名称</param>
+        /// <param name="queue">队列名</param>
+        /// <param name="isProperties">是否持久化</param>
+        /// <returns></returns>
+        public void PublishBroadCast(string exchange, string queue, string routingKey, string body, bool isProperties = false)
+        {
+            var channel = GetBroadCastChannel(queue, exchange);            
             try
             {
                 channel.BasicPublish(exchange, routingKey, null, body.SerializeUtf8());
@@ -245,6 +304,48 @@ namespace RMQ.Main
 
             Publish(deadLetterExchange, deadLetterQueue, deadLetterRoutingKey, deadLetterBody.ToJson());
         }
+
+        /// <summary>
+        /// 默认广播消息发布
+        /// </summary>
+        public void PublishBraodcastDefault()
+        {
+            try
+            {
+                var factory = new ConnectionFactory() { HostName = "localhost", UserName = "guest", Password = "guest" };
+                using (var connection = factory.CreateConnection())
+                {
+                    using (var channel = connection.CreateModel())
+                    {
+                        channel.ExchangeDeclare(exchange: "logs", type: "fanout");
+
+                        Console.WriteLine("*****************消息发布开始******************");
+                        for (int i = 0; i < 10000; i++)
+                        {
+                            var message = $"hello world {i}";
+                            Console.WriteLine(message);
+                            var body = Encoding.UTF8.GetBytes(message);
+                            channel.BasicPublish(exchange: "logs",
+                                                 routingKey: "",
+                                                 basicProperties: null,
+                                                 body: body);
+                            System.Threading.Thread.Sleep(100);
+                        }
+                    }
+                }
+               
+
+                Console.WriteLine(" Press [enter] to exit.");
+                Console.ReadLine();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+          
+        }
+
+
         #endregion
 
 
@@ -263,7 +364,23 @@ namespace RMQ.Main
 
             var isDeadLetter = typeof(T) == typeof(DeadLetterQueue);
 
-            Subscribe(queueInfo.QueueName, queueInfo.IsPersistence, handler, isDeadLetter);
+            SubscribeBroadcast(queueInfo.QueueName,queueInfo.ExchangeName,queueInfo.IsPersistence, handler, isDeadLetter);
+        }
+
+        /// <summary>
+        /// 接收消息
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="handler">消费处理</param>
+        public void SubscribeBroadCast<T>(Action<T> handler) where T : class
+        {
+            var queueInfo = GetRabbitMqAttribute<T>();
+            if (queueInfo.IsNull())
+                throw new ArgumentException(RabbitMqAttribute);
+
+            var isDeadLetter = typeof(T) == typeof(DeadLetterQueue);
+
+            SubscribeBroadcast(queueInfo.QueueName, queueInfo.ExchangeName, queueInfo.IsPersistence, handler, isDeadLetter);
         }
 
         /// <summary>
@@ -303,6 +420,90 @@ namespace RMQ.Main
             channel.BasicConsume(queue, false, consumer);
         }
 
+
+        /// <summary>
+        /// 接收消息(订阅广播)
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="queue">队列名称</param>
+        /// <param name="isProperties"></param>
+        /// <param name="handler">消费处理</param>
+        /// <param name="isDeadLetter"></param>
+        public void SubscribeBroadcast<T>(string queue, string exchange, bool isProperties, Action<T> handler, bool isDeadLetter) where T : class
+        {
+            //队列声明
+            var channel = GetModel(queue, exchange, "");
+
+            channel.ExchangeDeclare(exchange: exchange, type: ExchangeType.Fanout);
+            //默认队列,用于广播
+            var queueName = channel.QueueDeclare().QueueName;
+            channel.QueueBind(queue: queueName, exchange: exchange, routingKey: "");
+
+            var consumer = new EventingBasicConsumer(channel);
+            consumer.Received += (model, ea) =>
+            {
+                var body = ea.Body;
+                var msgStr = SerializeExtension.DeserializeUtf8(body);
+                var msg = msgStr.FromJson<T>();
+                try
+                {
+                    handler(msg);
+                }
+                catch (Exception ex)
+                {
+                    ex.GetInnestException().WriteToFile("队列接收消息", "RabbitMq");
+                    if (!isDeadLetter)
+                        PublishToDead<DeadLetterQueue>(queue, msgStr, ex);
+                }
+                finally
+                {
+                    channel.BasicAck(ea.DeliveryTag, false);
+                }
+            };
+            channel.BasicConsume(queueName, false, consumer);
+        }
+
+        /// <summary>
+        /// 默认广播订阅
+        /// </summary>
+        public void SubscribeBroadcastDefault()
+        {
+            try
+            {
+                var factory = new ConnectionFactory() { HostName = "localhost", UserName = "guest", Password = "guest" };
+                using (var connection = factory.CreateConnection())
+                using (var channel = connection.CreateModel())
+                {
+                    channel.ExchangeDeclare(exchange: "logs", type: "fanout");
+
+                    var queueName = channel.QueueDeclare().QueueName;
+                    channel.QueueBind(queue: queueName,
+                                      exchange: "logs",
+                                      routingKey: "");
+
+                    Console.WriteLine(" [*] Waiting for logs.");
+
+                    var consumer = new EventingBasicConsumer(channel);
+                    consumer.Received += (model, ea) =>
+                    {
+                        var body = ea.Body;
+                        var message = Encoding.UTF8.GetString(body);
+                        Console.WriteLine(" [x] {0}", message);
+                    };
+                    channel.BasicConsume(queue: queueName,
+                                         autoAck: true,
+                                         consumer: consumer);
+
+                    Console.WriteLine(" Press [enter] to exit.");
+                    Console.ReadLine();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            
+        }
         #endregion
 
         #region 获取消息

@@ -49,7 +49,7 @@ namespace e3net.MongodbServer
 
         private string m_tableName;
         //数据库名前缀
-        public readonly string BL_TableName_Prefix = "GpsWearable.Entity.";
+        public readonly string BL_TableName_Prefix = "";
         /// <summary>
         /// 数据表名称
         /// </summary>
@@ -610,7 +610,6 @@ namespace e3net.MongodbServer
         /// <param name="IdFild">主键Id名称</param>
         public virtual string Insert(T t, string IdFild)
         {
-
             string flag = null;
             try
             {
@@ -633,7 +632,6 @@ namespace e3net.MongodbServer
         /// <returns>id</returns>
         public async Task<string> InsertAsync(T t, string IdFild)
         {
-
             string flag = null;
             try
             {
@@ -648,8 +646,6 @@ namespace e3net.MongodbServer
             return flag;
         }
 
-
-
         /// <summary>
         ///批量 插入指定对象集合到数据库中
         /// </summary>
@@ -658,6 +654,7 @@ namespace e3net.MongodbServer
         {
             collection.InsertMany(list);
         }
+
         /// <summary>
         ///异步批量 插入指定对象集合到数据库中
         /// </summary>

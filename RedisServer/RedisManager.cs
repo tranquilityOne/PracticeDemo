@@ -47,10 +47,7 @@ namespace RedisServer
             //ReadServerList：可读的Redis链接地址。
             //MaxWritePoolSize：最大写链接数。
             //MaxReadPoolSize：最大读链接数。
-            //AutoStart：自动重启。
-            //LocalCacheTime：本地缓存到期时间，单位:秒。
-            //RecordeLog：是否记录日志,该设置仅用于排查redis运行时出现的问题,如redis工作正常,请关闭该项。
-            //RedisConfigInfo类是记录redis连接信息，此信息和配置文件中的RedisConfig相呼应
+            //AutoStart：自动重启。         
 
             // 支持读写分离，均衡负载 
             return new PooledRedisClientManager(readWriteHosts, readOnlyHosts, new RedisClientManagerConfig

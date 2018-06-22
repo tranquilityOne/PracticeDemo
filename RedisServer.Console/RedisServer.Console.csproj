@@ -48,6 +48,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\e3net.Common\e3net.Common.csproj">
+      <Project>{23aba422-dfc0-47a3-b2f2-669fb5921e1c}</Project>
+      <Name>e3net.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RedisServer\RedisServer.csproj">
       <Project>{468015e9-66d9-4808-a873-c1c412897fd2}</Project>
       <Name>RedisServer</Name>

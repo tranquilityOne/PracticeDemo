@@ -21,6 +21,7 @@ namespace RedisServer
         {
 
         }
+
         #region 基础 单类型
         #region add
         /// <summary>
@@ -121,7 +122,21 @@ namespace RedisServer
             }
         }
 
+        /// <summary>
+        /// 设置某个缓存过期
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="datetime"></param>
+        public static void SetExpire(string key, DateTime datetime)
+        {
+            using (var Redis = RedisManager.GetClient())
+            {
+                Redis.ExpireEntryAt(key, datetime);
+            }
+        }
+
         #endregion
+
         /// <summary>
         /// 获取指定类型
         /// </summary>
@@ -136,7 +151,6 @@ namespace RedisServer
             }
         }
 
-
         /// <summary>
         /// 移除整个
         /// </summary>
@@ -150,6 +164,17 @@ namespace RedisServer
             }
         }
 
+        public static void RemoveByPattern(string pattern)
+        {
+            using (var redis = RedisManager.GetClient())
+            {
+                //通过lua脚本批量删除
+                var deleteLua = $"for i, name in ipairs(redis.call('keys', '{pattern}')) do redis.call('del', name); end";
+                redis.ExecLua(deleteLua, new string[] {});
+            }
+            
+        }
+
         /// <summary>
         /// 是否存在 
         /// </summary>
@@ -161,28 +186,10 @@ namespace RedisServer
             {
                 return Redis.ContainsKey(key);
             }
-        }
-
-
-
-
-        /// <summary>
-        /// 设置某个缓存过期
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="datetime"></param>
-        public static void SetExpire(string key, DateTime datetime)
-        {
-            using (var Redis = RedisManager.GetClient())
-            {
-                Redis.ExpireEntryAt(key, datetime);
-            }
-        }
-
-
+        }      
         #endregion
 
-        #region   hash 对像 转成字符串来存
+        #region   hash对像转成字符串来存
 
         /// <summary>
         /// 存储数据到hash表 如果存在则覆盖
@@ -386,7 +393,6 @@ namespace RedisServer
         }
         #endregion
 
-
         #region 无序集合
         /// <summary>
         /// 无序集合
@@ -408,9 +414,10 @@ namespace RedisServer
             {
                 Redis.AddItemToSet(key, value);
             }
-        } 
+        }
         #endregion
 
+        #region 保存数据文件
         /// <summary>
         /// 保存数据DB文件到硬盘
         /// </summary>
@@ -431,7 +438,33 @@ namespace RedisServer
                 Redis.SaveAsync();
             }
         }
+        #endregion
 
+        #region 过期事件订阅
+        public static void SubscribeExpireNot(Action<string, string> action)
+        {
+            try
+            {
+                using (var Redis = RedisManager.GetClient())
+                {
+                    using (var subscription = Redis.CreateSubscription())
+                    {
+                        var channelName = "__keyevent@0__:expired";
+                        subscription.OnSubscribe = channel => Console.WriteLine("订阅消息频道：" + channelName);
+                        subscription.OnUnSubscribe = channel => Console.WriteLine("取消订阅消息频道：" + channelName);
 
+                        subscription.OnMessage = action;
+
+                        subscription.SubscribeToChannels(channelName);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
+        } 
+        #endregion
     }
 }
