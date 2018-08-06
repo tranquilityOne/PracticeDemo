@@ -211,7 +211,10 @@ namespace EncryptDemo
 
             //byte[] bytes = { 255, 255, 255 };
             //Console.WriteLine(bytes.ByteToInt32(0, 3));
+            //按位或
             //Console.WriteLine(0x02 | 0x04 | 0x08 | 0x10 | 0x20 | 0x40);
+            //按位与
+            //Console.WriteLine(3 & 8);
             //HttpUtil hu = new HttpUtil();
             //for (int i = 0; i < 1000; i++)
             //{
@@ -246,6 +249,8 @@ namespace EncryptDemo
             //    Console.WriteLine(PostUploadPhoto());
             //}
 
+
+
             #region 计时器测试(连续开始与暂停后,统计耗时)
             //System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             //sw.Restart();
@@ -259,8 +264,9 @@ namespace EncryptDemo
             #endregion
 
             #region 取模测试
+            //Console.WriteLine(899999996 % 100);
             //int aNum = 0, bNum = 0, cNum = 0;
-            //for (int i = 0; i < 100; i++)
+            //for (int i = 0; i < 10; i++)
             //{
             //    if (i % 3 == 0)
             //        aNum++;
@@ -272,9 +278,96 @@ namespace EncryptDemo
             //}
             #endregion
 
-            MongodbInsert();
+            #region 正则表达式取字符之间的数据
+            //var msgData = "*VK200YDB&B123#";
+            //var parseData = GetValueByRegex(msgData, "&B", "&");
+            //parseData = string.IsNullOrEmpty(parseData) ? GetValueByRegex(msgData, "&B", "#") : parseData;
+            //Console.WriteLine(parseData); 
+            #endregion
+
+            #region 大小端传输
+            //byte[] b = { 1, 2, 3, 4 };
+
+            ////x1是小端模式值：x1=67305985=0x04030201
+            //int x1 = BitConverter.ToInt32(b, 0);
+            //Console.WriteLine(x1);
+            ////x2是大端模式值：x2=16909060=0x01020304
+            //int x2 = IPAddress.NetworkToHostOrder(x1);
+            //Console.WriteLine(x2);
+            #endregion
+
+            //TestSingleInstance();
+            //string hexData = "5B57E623";
+            ////1532487203
+            //Console.WriteLine(Int32.Parse("5B57E623", System.Globalization.NumberStyles.HexNumber));
+            //Console.WriteLine(TimeHelper.GetDateTimeFrom1970Ticks(Int32.Parse("5B582642", System.Globalization.NumberStyles.HexNumber)));
+            //Console.WriteLine(TimeHelper.GetDateTimeFrom1970Ticks(Int32.Parse("5B55AFC5", System.Globalization.NumberStyles.HexNumber)));
+
+            //var iccid = "";
+            //for (int i = 0; i < 10; i++)
+            //{
+            //    iccid += Convert.ToChar(51);
+            //}
+            //Console.WriteLine(iccid);
+
+
+            Console.WriteLine((byte)('B'));
+            byte[] bytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            List<byte> listByets = bytes.ToList<byte>();
+            listByets.RemoveRange(1, 2);
+            foreach (var item in listByets)
+            {
+                Console.WriteLine(item);
+            }
+            //Student sModel = new Student();
+            //sModel.buffer = bytes;
+            //BytesArrayTransfer(sModel.buffer);
+            //for (int i = 0; i < sModel.buffer.Length; i++)
+            //{
+            //    Console.WriteLine(sModel.buffer[i]);
+            //}
+
+            //Console.WriteLine(1532487203.ToHexPadLeft(8));
+            //Console.WriteLine(TimeHelper.GetDateTimeFrom1970Ticks(long.Parse("1482106434")));
+
+            //long taskId = 0;
+            //Int64.TryParse("1F6A6", System.Globalization.NumberStyles.HexNumber, null, out taskId);
+            //Console.WriteLine(taskId);
+
+            //MongodbInsert();
             //DeliveryConsole();
             Console.ReadKey();
+        }
+
+        static string GetAlarmHexData(int timestamp,int type,int count)
+        {
+             return timestamp.ToHexPadLeft(8)
+                    + type.ToHexPadLeft(2)
+                    + count.ToHexPadLeft(2);
+        }
+
+        static void BytesArrayTransfer(byte[] bytes)
+        {
+          
+            List<byte> lisetBytes = bytes.ToList<byte>();
+            for (int i = 2; i < 3; i++)
+            {
+                lisetBytes.RemoveAt(i);
+            }
+            bytes = lisetBytes.ToArray<byte>();
+        }
+
+        static void TestSingleInstance()
+        {
+            Task[] taskArray = new Task[100];
+            for (int i = 0; i < 100; i++)
+            {
+                taskArray[i] = Task.Factory.StartNew(() =>
+                {
+                    SingleInstance.TestSingleInstance entity = SingleInstance.TestSingleInstance.Instance;
+                });
+            }
+            Task.WaitAll(taskArray);
         }
 
 
@@ -362,6 +455,19 @@ namespace EncryptDemo
         public static void TickCompletedHandle(string name)
         {
             Console.WriteLine(string.Format("{0}执行完毕！",name));
+        }
+
+        /// <summary>
+        /// 获得字符串中开始和结束字符串中间得值
+        /// </summary>
+        /// <param name="str">字符串</param>
+        /// <param name="s">开始</param>
+        /// <param name="e">结束</param>
+        /// <returns></returns> 
+        public static string GetValueByRegex(string str, string start, string end)
+        {
+            Regex rg = new Regex("(?<=(" + start + "))[.\\s\\S]*?(?=(" + end + "))", RegexOptions.Multiline | RegexOptions.Singleline);
+            return rg.Match(str).Value;
         }
 
 
@@ -1000,5 +1106,9 @@ namespace EncryptDemo
         /// true 男 false 女
         /// </summary>
         public bool Sex { get; set; }
+
+        public byte[] buffer { get; set; }
     }
+
+
 }

@@ -7,69 +7,67 @@ using System.Threading.Tasks;
 
 namespace ThreadTest
 {
-
-
     public class LockInTask
     {
-        static int TaskNum = 10;
+        static int TaskNum = 30;
         const int RUN_LOOP =100;
         static Task[] Tasks;
 
         static int result;
         static void Main()
         {
-            Tasks = new Task[TaskNum];
-
-            for (int i = 0; i < TaskNum; i++)
+            //按住回车数秒
+            while (true)
             {
-                Tasks[i] = Task.Factory.StartNew((num) =>
+                Tasks = new Task[TaskNum];
+
+                for (int i = 0; i < TaskNum; i++)
                 {
-                    var taskId = (int)num;
-                    work(taskId);
-                }, i);
-            }
+                    Tasks[i] = Task.Factory.StartNew((num) =>
+                    {
+                        var taskId = (int)num;
+                        work(taskId);
+                    }, i);
+                }
 
-            try
-            {
-                Task.WaitAll(Tasks);
-                Console.WriteLine("==========================================================");
-                Console.WriteLine("All Phase is completed");
-                Console.WriteLine("==========================================================");
-                Console.WriteLine("result " + result);
+                try
+                {
+                    Task.WaitAll(Tasks);
+                    Console.WriteLine("==========================================================");
+                    Console.WriteLine("All Phase is completed");
+                    Console.WriteLine("==========================================================");
+                    Console.WriteLine("result " + result);
+                }
+                catch (AggregateException aex)
+                {
+                    Console.WriteLine("Task failed And Canceled" + aex.ToString());
+                }
+                Console.ReadKey();
             }
-            catch (AggregateException aex)
-            {
-                Console.WriteLine("Task failed And Canceled" + aex.ToString());
-            }
-            Console.ReadKey();
-        
         }
 
         static void work(int taskId)
         {
             int i = 0;
-            while (i < RUN_LOOP)
+            
+            try
             {
-                try
-                {
-                    //经测试，不使用Interlocked.Increment,同样可实现原子操作,why?
+                //线程处理任务多数,会导致结果不正确
+                //not use lock
+                result++;
 
-                    //not use lock
-                    //result++;
-
-                    //use Interlocked
-                    Interlocked.Increment(ref result);
-                    Console.WriteLine("Task " + taskId + " working ... ..." + result);
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-                finally
-                {
-                    i++;
-                }
+                //Interlocked.Increment 可实现原子操作
+                //Interlocked.Increment(ref result);
             }
+            catch (Exception)
+            {
+                throw;
+            }
+            finally
+            {
+                i++;
+            }
+            
            
         }
     }

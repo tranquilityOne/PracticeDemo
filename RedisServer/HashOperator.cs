@@ -309,6 +309,18 @@ namespace RedisServer
             }
         }
 
+        /// <summary>
+        /// 获取所有的hash 值
+        /// </summary>
+        /// <param name="hashId"></param>
+        /// <returns></returns>
+        public static List<string> GetHashValues(string hashId)
+        {
+            using (var Redis = RedisManager.GetClient())
+            {
+                return Redis.GetHashValues(hashId);
+            }
+        }
 
         #endregion
 
@@ -413,6 +425,28 @@ namespace RedisServer
             using (var Redis = RedisManager.GetClient())
             {
                 Redis.AddItemToSet(key, value);
+            }
+        }
+
+        /// <summary>
+        /// 删除指定集合
+        /// </summary>
+        public static void SRemove(string key, string value)
+        {
+            using (var Redis = RedisManager.GetClient())
+            {
+                Redis.RemoveItemFromSet(key, value);
+            }
+        }
+
+        /// <summary>
+        /// 删除指定集合
+        /// </summary>
+        public HashSet<string> SMember(string key, string value)
+        {
+            using (var Redis = RedisManager.GetClient())
+            {
+                return Redis.GetAllItemsFromSet(key);
             }
         }
         #endregion

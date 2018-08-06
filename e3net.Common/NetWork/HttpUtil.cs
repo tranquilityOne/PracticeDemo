@@ -475,51 +475,51 @@ namespace e3net.Common.NetWork
                     return retString;
                 }
             }
-        }  
-        //public byte[] GetImageBytes(string url, ref CookieContainer cookieContainer)
-        //{
-        //    HttpWebRequest request = null;
-        //    //如果是发送HTTPS请求  
-        //    if (url.StartsWith("https", StringComparison.OrdinalIgnoreCase))
-        //    {
-        //        ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback(CheckValidationResult);
-        //        request = WebRequest.Create(url) as HttpWebRequest;
-        //        request.ProtocolVersion = HttpVersion.Version10;
-        //    }
-        //    else
-        //    {
-        //        request = WebRequest.Create(url) as HttpWebRequest;
-        //    }
-        //    try
-        //    {
-        //        request.CookieContainer = cookieContainer;
-        //        WebResponse webres = request.GetResponse();
-        //        Stream stream = webres.GetResponseStream();
-        //        //byte[] bytes = new byte[stream.Length];
-        //        //stream.Read(bytes, 0, bytes.Length);
-        //        //stream.Seek(0, SeekOrigin.Begin);
-        //        //stream.Close();
-        //        //return bytes;
+        }
+        public byte[] GetImageBytes(string url, ref CookieContainer cookieContainer)
+        {
+            HttpWebRequest request = null;
+            //如果是发送HTTPS请求  
+            if (url.StartsWith("https", StringComparison.OrdinalIgnoreCase))
+            {
+                ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback(CheckValidationResult);
+                request = WebRequest.Create(url) as HttpWebRequest;
+                request.ProtocolVersion = HttpVersion.Version10;
+            }
+            else
+            {
+                request = WebRequest.Create(url) as HttpWebRequest;
+            }
+            try
+            {
+                request.CookieContainer = cookieContainer;
+                WebResponse webres = request.GetResponse();
+                Stream stream = webres.GetResponseStream();
+                //byte[] bytes = new byte[stream.Length];
+                //stream.Read(bytes, 0, bytes.Length);
+                //stream.Seek(0, SeekOrigin.Begin);
+                //stream.Close();
+                //return bytes;
 
-        //        Image image;
-        //        image = Image.FromStream(stream);
-        //        stream.Close();
+                Image image;
+                image = Image.FromStream(stream);
+                stream.Close();
 
-        //        MemoryStream ms = new MemoryStream();
-        //        image.Save(ms, image.RawFormat);
-        //        //byte[] bytes = new byte[ms.Length];  
-        //        //ms.Read(bytes, 0, Convert.ToInt32(ms.Length));  
-        //        //以上两句改成下面两句  
-        //        byte[] bytes = ms.ToArray();
-        //        ms.Close();
-        //        return bytes;
-        //    }
-        //    catch
-        //    {
-        //        return null;
-        //    }
-        //    //return image;
-        //}
+                MemoryStream ms = new MemoryStream();
+                image.Save(ms, image.RawFormat);
+                //byte[] bytes = new byte[ms.Length];  
+                //ms.Read(bytes, 0, Convert.ToInt32(ms.Length));  
+                //以上两句改成下面两句  
+                byte[] bytes = ms.ToArray();
+                ms.Close();
+                return bytes;
+            }
+            catch
+            {
+                return null;
+            }
+            //return image;
+        }
     }
 
     /// <summary>  

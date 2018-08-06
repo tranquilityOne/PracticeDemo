@@ -140,7 +140,7 @@ namespace RMQ.Main
             return ModelDic.GetOrAdd(queue, key =>
             {
                 var channel = _conn.CreateModel();
-                ExchangeDeclare(channel, exchange, ExchangeType.Fanout, isProperties);
+                ExchangeDeclare(channel, exchange, ExchangeType.Topic, isProperties);
                 //QueueDeclare(model, queue, isProperties);
                 //model.QueueBind(queue, exchange, routingKey);
                 ModelDic[queue] = channel;
@@ -247,6 +247,29 @@ namespace RMQ.Main
             try
             {
                 channel.BasicPublish(exchange, routingKey, null, body.SerializeUtf8());
+            }
+            catch (Exception ex)
+            {
+                throw ex.GetInnestException();
+            }
+        }
+
+        /// <summary>
+        /// 发布消息
+        /// </summary>
+        /// <param name="routingKey">路由键</param>
+        /// <param name="body">队列信息</param>
+        /// <param name="exchange">交换机名称</param>
+        /// <param name="queue">队列名</param>
+        /// <param name="isProperties">是否持久化</param>
+        /// <returns></returns>
+        public void Publish(string exchange, string queue, string routingKey, byte[] body, bool isProperties = false)
+        {
+            var channel = GetModel(exchange, queue, routingKey, isProperties);
+
+            try
+            {
+                channel.BasicPublish(exchange, routingKey, null, body);
             }
             catch (Exception ex)
             {

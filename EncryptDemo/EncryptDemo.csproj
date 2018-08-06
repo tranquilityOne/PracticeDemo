@@ -104,6 +104,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
+    <Compile Include="SingleInstance\TestSingleInstance.cs" />
     <Compile Include="TimerTest.cs" />
     <Compile Include="View\TerLastInfo.cs" />
     <Compile Include="VoiceSearchOpention.cs" />

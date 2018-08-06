@@ -50,6 +50,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\e3net.Common\e3net.Common.csproj">
+      <Project>{23aba422-dfc0-47a3-b2f2-669fb5921e1c}</Project>
+      <Name>e3net.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\RMQ.Main\RMQ.Main.csproj">
       <Project>{FAACAE35-1B33-4D0C-8E02-DD86DC3AC5E8}</Project>
       <Name>RMQ.Main</Name>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using ServiceStack.Redis;
 using System.Collections.Concurrent;
+using System.Configuration;
 
 namespace RedisServer
 {
@@ -15,7 +16,11 @@ namespace RedisServer
         /// <summary>
         /// redis配置文件信息
         /// </summary>
-        private static string RedisPath = "redis123456@127.0.0.1:6379";
+        private static string RedisPath;
+        /// <summary>
+        /// 所选库
+        /// </summary>
+        private static int DBIndex;
          //[ThreadStatic]
         private static PooledRedisClientManager _prcm;
 
@@ -32,11 +37,17 @@ namespace RedisServer
         /// </summary>
         private static void CreateManager()
         {
+            if (String.IsNullOrEmpty(ConfigurationManager.AppSettings["RedisConnectionString"]))
+            {
+                throw new Exception("Redis connection string is empty");
+            }
+            RedisPath = ConfigurationManager.AppSettings["RedisConnectionString"];
+            Int32.TryParse(ConfigurationManager.AppSettings["RedisDBIndex"], out DBIndex);               
             _prcm = CreateManager(new string[] { RedisPath }, new string[] { RedisPath });
         }
 
         /// <summary>
-        /// 
+        /// 链接池
         /// </summary>
         /// <param name="readWriteHosts">可写的Redis链接地址 password@ip:port </param>
         /// <param name="readOnlyHosts">可读的Redis链接地址 password@ip:port </param>
@@ -55,6 +66,7 @@ namespace RedisServer
                 MaxWritePoolSize = 1024, // “写”链接池链接数 
                 MaxReadPoolSize = 1024, // “读”链接池链接数 
                 AutoStart = true,
+                DefaultDb = DBIndex
             });
         }
 
