@@ -122,6 +122,7 @@ namespace ADO.Test
         {
             try
             {
+
                 StringBuilder sb = new StringBuilder();
                 string testStr = "";
                 for (int i = 0; i < 100; i++)
