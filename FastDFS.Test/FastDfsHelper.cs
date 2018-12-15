@@ -14,7 +14,7 @@ namespace FastDFS.Test
         public static readonly FastDfsConfig Config;
         static FastDfsHelper()
         {
-            Config = FastDfsManager.GetConfigSection();
+            Config = FastDfsManager.GetConfigSection("fastdfs");
             ConnectionManager.InitializeForConfigSection(Config);
         }
 

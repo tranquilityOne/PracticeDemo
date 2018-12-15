@@ -418,7 +418,7 @@ namespace RedisServer
         }
 
         /// <summary>
-        /// 无序集合
+        /// 往集合中添加单个值
         /// </summary>
         public static void SAdd(string key, string value)
         {
@@ -440,7 +440,7 @@ namespace RedisServer
         }
 
         /// <summary>
-        /// 删除指定集合
+        /// 获取所有集合
         /// </summary>
         public HashSet<string> SMember(string key, string value)
         {

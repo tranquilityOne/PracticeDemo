@@ -29,7 +29,7 @@ namespace RMQ.Model
     /// <summary>
     /// 升级日志类
     /// </summary>
-    [RabbitMq("TerUpgradeLog", ExchangeName = "TerUpgradeLog.exchange", IsPersistence = false)]
+    [RabbitMq("upgradelog_queue", ExchangeName = "upgradelog.exchange", IsPersistence = true)]
     public class UpgradeLog
     {
         /// <summary>
@@ -82,5 +82,30 @@ namespace RMQ.Model
         /// 升级任务ID
         /// </summary>
         public int TaskId { get; set; }
+
+        /// <summary>
+        /// 固件类型(0=DU(MTK),1=DO(MCU))
+        /// </summary>
+        public int FirewareType { get; set; }
+
+        /// <summary>
+        /// 硬件版本
+        /// </summary>
+        public string HardwareVer { get; set; }
+
+        /// <summary>
+        /// 软件版本
+        /// </summary>
+        public string SoftwareVer { get; set; }
+
+        /// <summary>
+        /// 软件基础版本
+        /// </summary>
+        public string AppVer { get; set; }
+
+        /// <summary>
+        /// 方案名称
+        /// </summary>
+        public string Scheme { get; set; }
     }
 }

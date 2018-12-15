@@ -2,6 +2,8 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
+using System.Security.Cryptography;
+using e3net.Common.NetWork;
 
 namespace e3net.Common.Encrypt
 {
@@ -183,7 +185,51 @@ namespace e3net.Common.Encrypt
 
             result = result.Replace("-", "");
             return result;
-        } 
+        }
+
+        /// <summary>
+        /// 根据文件生成MD5字符串
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns>文件全路径</returns>
+        public static string CalculateMD5(string filename)
+        {
+            using (var md5 = System.Security.Cryptography.MD5CryptoServiceProvider.Create())
+            {
+                using (var stream = File.OpenRead(filename))
+                {
+                    var hash = md5.ComputeHash(stream);
+                    stream.Seek(0, SeekOrigin.Begin);
+                    return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 根据下载链接生成MD5加密文件
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public static string GetMD5EncryptStr(string url)
+        {
+            try
+            {
+                MD5 md5 = new MD5CryptoServiceProvider();
+                byte[] bytesHash = md5.ComputeHash(new HttpUtil().GetFileBytes(url));
+
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < bytesHash.Length; i++)
+                {
+                    sb.Append(bytesHash[i].ToString("x2"));
+                }
+                return sb.ToString();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         #endregion
 
         private void Test()

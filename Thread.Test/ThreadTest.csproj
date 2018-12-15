@@ -33,7 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>ThreadTest.LockInThread</StartupObject>
+    <StartupObject>ThreadTest.AsyncAndAwait</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsyncAndAwait.cs" />
     <Compile Include="AsyncTask.cs" />
     <Compile Include="LockInTask.cs" />
     <Compile Include="LockInThread.cs" />

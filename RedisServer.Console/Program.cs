@@ -113,10 +113,14 @@ namespace RedisServer.Console
                     GetRedisData();
                 else if (input == "tts")
                     LoopAddKey(number);
-                else if (input == "ttg")
-                    LoopAddKey(number);
+                else if (input == "")
+                    GetKeyAsync(number);
                 else if (input == "hash")
                     HashSet();
+                else if (input == "push")
+                    AsyncPushData(1000000);
+                else if (input == "pop")
+                    Pop(1000000);
                 else
                     System.Console.WriteLine("输入错误！");
             }
@@ -198,6 +202,53 @@ namespace RedisServer.Console
             System.Console.WriteLine("总耗时:" + sw.ElapsedMilliseconds);
         }
 
+        static void GetKeyAsync(int num)
+        {
+            LimitedConcurrencyLevelTaskScheduler scheduler = new LimitedConcurrencyLevelTaskScheduler(100);
+            List<Task> tasks = new List<Task>();
+            // Create a TaskFactory and pass it our custom scheduler. 
+            TaskFactory factory = new TaskFactory(scheduler);
+
+            factory.StartNew(() =>
+            {
+                int maxWorkerThreads, maxCompletionPortThreads;
+                ThreadPool.GetMaxThreads(out maxWorkerThreads, out maxCompletionPortThreads);
+                System.Console.WriteLine($"maxworkerThreads:{maxWorkerThreads},maxCompletionPortThreads:{maxCompletionPortThreads}");
+                while (true)
+                {
+                    int workerThreads = 0, completionPortThreads = 0;
+                    ThreadPool.GetAvailableThreads(out workerThreads, out completionPortThreads);
+                    System.Console.WriteLine($"workerThreads:{workerThreads},completionPortThreads:{completionPortThreads}");
+                    Thread.Sleep(200);
+                }                               
+            });
+
+            for (int i = 0; i < num; i++)
+            {
+                for (int k = 0; k < 5; k++)
+                {
+                    Asyncparams asyncparams = new Asyncparams();
+                    asyncparams.BeginIndex = i;
+                    asyncparams.EndIndex = k;
+                    Task task = factory.StartNew((n) =>
+                    {
+                        try
+                        {
+                           HashOperator.Get<Ter>(string.Format("key_{0}_{1}", asyncparams.BeginIndex, asyncparams.EndIndex));
+                           //Thread.Sleep(2);
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Console.WriteLine(ex.Message);
+                        }                              
+                    }, asyncparams);
+                    tasks.Add(task);
+                }
+            }
+            Task.WaitAll(tasks.ToArray());         
+        }
+
+
         static void LoopAddList(int num)
         {
             try
@@ -256,7 +307,9 @@ namespace RedisServer.Console
 
         static void AsyncPushData(int num)
         {
-            string key = "server_send_1";
+            System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+            string key = "redis_queue";
             for (int i = 0; i < num; i++)
             {
                 HashOperator.PushString(key, JsonHelper.ToJson(new Ter()
@@ -271,6 +324,8 @@ namespace RedisServer.Console
                     
                 }));
             }
+            sw.Stop();
+            System.Console.WriteLine("push总耗时:" + sw.Elapsed.TotalMilliseconds);
         }
 
         /// <summary>
@@ -297,11 +352,11 @@ namespace RedisServer.Console
             sw.Start();
             for (int i = 0; i < num; i++)
             {
-                HashOperator.PopString("list_pop");
+                HashOperator.PopString("redis_queue");
             }
             sw.Stop();
             TimeSpan ts2 = sw.Elapsed;
-            System.Console.WriteLine("总耗时:" + ts2.TotalMilliseconds);
+            System.Console.WriteLine("pop总耗时:" + ts2.TotalMilliseconds);
         }
         #endregion
 
@@ -486,6 +541,8 @@ namespace RedisServer.Console
             //精确到毫秒
             return (long)ts.TotalMilliseconds; 
         }
+
+
     }
 
     public class Ter
@@ -558,5 +615,14 @@ namespace RedisServer.Console
             SendTime = sendTime;
             ReusltTime = DateTime.Now.Ticks;
         }
+    }
+
+    public class Asyncparams
+    {
+        public int BeginIndex { get; set; }
+
+        public int EndIndex { get; set; }
+
+        public string taskId { get; set; }
     }
 }

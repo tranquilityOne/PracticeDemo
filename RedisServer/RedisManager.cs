@@ -66,7 +66,7 @@ namespace RedisServer
                 MaxWritePoolSize = 1024, // “写”链接池链接数 
                 MaxReadPoolSize = 1024, // “读”链接池链接数 
                 AutoStart = true,
-                DefaultDb = DBIndex
+                DefaultDb = DBIndex,
             });
         }
 

@@ -520,7 +520,50 @@ namespace e3net.Common.NetWork
             }
             //return image;
         }
+
+        /// <summary>
+        /// 通过Url获取文件流
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public byte[] GetFileBytes(string url)
+        {
+            HttpWebRequest request = null;
+            //如果是发送HTTPS请求  
+            if (url.StartsWith("https", StringComparison.OrdinalIgnoreCase))
+            {
+                ServicePointManager.ServerCertificateValidationCallback = new RemoteCertificateValidationCallback(CheckValidationResult);
+                request = WebRequest.Create(url) as HttpWebRequest;
+                request.ProtocolVersion = HttpVersion.Version10;
+            }
+            else
+            {
+                request = WebRequest.Create(url) as HttpWebRequest;
+            }
+            try
+            {
+                WebResponse webres = request.GetResponse();
+                using (Stream stream = webres.GetResponseStream())
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        stream.CopyToAsync(ms);
+                        byte[] bytes = new byte[ms.Length];
+                        ms.Read(bytes, 0, bytes.Length);
+                        ms.Seek(0, SeekOrigin.Begin);
+                        ms.Close();
+                        return bytes;
+                    }
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
+
+
 
     /// <summary>  
     /// 表单数据项  

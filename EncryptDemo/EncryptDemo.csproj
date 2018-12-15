@@ -86,6 +86,7 @@
     <Compile Include="Common\HttpUtil.cs" />
     <Compile Include="Common\JsonHelper.cs" />
     <Compile Include="Common\StringHelper.cs" />
+    <Compile Include="Coordinate.cs" />
     <Compile Include="CRC\CRCCheckSumHelper.cs" />
     <Compile Include="CRC\GT106CRC.cs" />
     <Compile Include="DESEncrypt.cs" />
@@ -111,6 +112,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="F210.gz" />
     <None Include="packages.config" />
     <None Include="Service References\AjMobileService\AjMobileService.wsdl" />
     <None Include="Service References\AjMobileService\EncryptDemo.AjMobileService.ResultListOfAjPhoneCountryCodeViewModel.datasource">

@@ -240,7 +240,7 @@ namespace RMQ.Main
         /// <param name="queue">队列名</param>
         /// <param name="isProperties">是否持久化</param>
         /// <returns></returns>
-        public void Publish(string exchange, string queue, string routingKey, string body, bool isProperties = false)
+        public void Publish(string exchange, string queue, string routingKey, string body, bool isProperties = true)
         {
             var channel = GetModel(exchange, queue, routingKey, isProperties);
 
@@ -263,7 +263,7 @@ namespace RMQ.Main
         /// <param name="queue">队列名</param>
         /// <param name="isProperties">是否持久化</param>
         /// <returns></returns>
-        public void Publish(string exchange, string queue, string routingKey, byte[] body, bool isProperties = false)
+        public void Publish(string exchange, string queue, string routingKey, byte[] body, bool isProperties = true)
         {
             var channel = GetModel(exchange, queue, routingKey, isProperties);
 
@@ -443,6 +443,42 @@ namespace RMQ.Main
             channel.BasicConsume(queue, false, consumer);
         }
 
+
+        /// <summary>
+        /// 接收消息
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="queue">队列名称</param>
+        /// <param name="isProperties"></param>
+        /// <param name="handler">消费处理</param>
+        /// <param name="isDeadLetter"></param>
+        public void Subscribe(string queue, bool isProperties, Action handler, bool isDeadLetter)
+        {
+            //队列声明
+            var channel = GetModel(queue, isProperties);
+
+            var consumer = new EventingBasicConsumer(channel);
+            consumer.Received += (model, ea) =>
+            {
+                var body = ea.Body;
+                var msgStr = SerializeExtension.DeserializeUtf8(body);
+                try
+                {
+                    
+                }
+                catch (Exception ex)
+                {
+                    ex.GetInnestException().WriteToFile("队列接收消息", "RabbitMq");
+                    if (!isDeadLetter)
+                        PublishToDead<DeadLetterQueue>(queue, msgStr, ex);
+                }
+                finally
+                {
+                    channel.BasicAck(ea.DeliveryTag, false);
+                }
+            };
+            channel.BasicConsume(queue, false, consumer);
+        }
 
         /// <summary>
         /// 接收消息(订阅广播)

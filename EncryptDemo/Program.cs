@@ -21,7 +21,7 @@ using System.Threading;
 using e3net.Common;
 using e3net.MongodbServer.Test;
 using e3net.MongodbServer;
-
+using e3net.Common.Encrypt;
 namespace EncryptDemo
 {
     class Program
@@ -279,8 +279,8 @@ namespace EncryptDemo
             #endregion
 
             #region 正则表达式取字符之间的数据
-            //var msgData = "*VK200YDB&B123#";
-            //var parseData = GetValueByRegex(msgData, "&B", "&");
+            //var msgData = "*VK200YDB&B123#*";
+            //var parseData = GetValueByRegex(msgData, "*V", "#");
             //parseData = string.IsNullOrEmpty(parseData) ? GetValueByRegex(msgData, "&B", "#") : parseData;
             //Console.WriteLine(parseData); 
             #endregion
@@ -311,14 +311,14 @@ namespace EncryptDemo
             //Console.WriteLine(iccid);
 
 
-            Console.WriteLine((byte)('B'));
-            byte[] bytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            List<byte> listByets = bytes.ToList<byte>();
-            listByets.RemoveRange(1, 2);
-            foreach (var item in listByets)
-            {
-                Console.WriteLine(item);
-            }
+            //Console.WriteLine((byte)('B'));
+            //byte[] bytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            //List<byte> listByets = bytes.ToList<byte>();
+            //listByets.RemoveRange(1, 2);
+            //foreach (var item in listByets)
+            //{
+            //    Console.WriteLine(item);
+            //}
             //Student sModel = new Student();
             //sModel.buffer = bytes;
             //BytesArrayTransfer(sModel.buffer);
@@ -336,6 +336,13 @@ namespace EncryptDemo
 
             //MongodbInsert();
             //DeliveryConsole();
+
+            // Console.WriteLine(MD5Util.GetMD5EncryptStr("http://119.147.218.67:913//File/20180320/F210.gz"));
+
+            float f = 0.0056f;
+            double d = 0.01;
+            Console.WriteLine((float)(0.01d));
+            Console.WriteLine((float)Math.Round(f, 2));
             Console.ReadKey();
         }
 
@@ -917,6 +924,35 @@ namespace EncryptDemo
             return result;
         }
 
+        public static void PostLotTest()
+        {
+            try
+            {
+                List<LOTRequestData> listRequest = new List<LOTRequestData>();
+                listRequest.Add(new LOTRequestData()
+                {
+                    DeviceId="11",
+                    service = new DeviceServiceData() {
+                        data="1",
+                        serviceId = "ss",
+                        eventTime = "000111",
+                        serviceType ="s"
+                    },
+                    gatewayId = "1",
+                    notifyType = "2",
+                    requestId = Guid.NewGuid().ToString()
+                });
+                string url = "http://localhost:56443/DataReceive/PostTest";
+                //e3net.Common.NetWork.HttpUtil.PostForm(url, listRequest);
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+
         #endregion
 
         #region 微聊测试
@@ -971,6 +1007,8 @@ namespace EncryptDemo
             return result;
         } 
         #endregion
+
+
 
         public static void SaveImage()
         {
@@ -1110,5 +1148,44 @@ namespace EncryptDemo
         public byte[] buffer { get; set; }
     }
 
+    /// <summary>
+    /// 请求数据参数
+    /// </summary>
+    public class LOTRequestData
+    {
+        /// <summary>
+        /// 通知类型
+        /// </summary>
+        public string notifyType { get; set; }
 
+        /// <summary>
+        /// 唯一标识
+        /// </summary>
+        public string requestId { get; set; }
+
+        /// <summary>
+        /// 设备Id
+        /// </summary>
+        public string DeviceId { get; set; }
+
+        /// <summary>
+        /// 网关Id
+        /// </summary>
+        public string gatewayId { get; set; }
+
+        public DeviceServiceData service { get; set; }
+    }
+
+    public class DeviceServiceData
+    {
+        public string serviceId { get; set; }
+
+        public string serviceType { get; set; }
+
+        public object data { get; set; }
+
+        public string eventTime { get; set; }
+
+
+    }
 }

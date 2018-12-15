@@ -49,7 +49,6 @@ namespace WCFService.BLL
         /// <returns></returns>
         public string GetUserTokenInfor(string key)
         {
-
             //双工模式
             InstanceContext instanceContext = new InstanceContext(new DoCallBack());
             using (ChannelFactory<IMessageService> factory = new DuplexChannelFactory<IMessageService>(instanceContext, helloWorldBinding, HelloAddress))
